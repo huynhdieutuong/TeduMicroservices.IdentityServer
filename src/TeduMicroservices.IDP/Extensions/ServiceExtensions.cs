@@ -1,4 +1,6 @@
-﻿namespace TeduMicroservices.IDP.Extensions;
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace TeduMicroservices.IDP.Extensions;
 
 public static class ServiceExtensions
 {
@@ -16,6 +18,7 @@ public static class ServiceExtensions
     public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetConnectionString("IdentitySqlConnection");
+        var migrationsAssembly = typeof(Program).Assembly.GetName().Name;
         services.AddIdentityServer(options =>
         {
             // https://docs.duendesoftware.com/identityserver/v6/fundamentals/resources/api_scopes#authorization-based-on-scopes
@@ -27,11 +30,16 @@ public static class ServiceExtensions
         })
             // not recommended for production - you need to store your key material somewhere secure
             .AddDeveloperSigningCredential()
-            .AddInMemoryIdentityResources(Config.IdentityResources)
-            .AddInMemoryApiScopes(Config.ApiScopes)
-            .AddInMemoryClients(Config.Clients)
-            .AddInMemoryApiResources(Config.ApiResources)
-            .AddTestUsers(TestUsers.Users);
+            .AddConfigurationStore(options =>
+            {
+                options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+            })
+            .AddOperationalStore(options =>
+            {
+                options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
+                    sql => sql.MigrationsAssembly(migrationsAssembly));
+            });
     }
 
     public static void ConfigureCors(this IServiceCollection services)
