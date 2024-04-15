@@ -1,5 +1,6 @@
 ﻿using Serilog;
 using TeduMicroservices.IDP.Extensions;
+using TeduMicroservices.IDP.Infrastructure.Persistence;
 using TeduMicroservices.IDP.Persistence;
 
 Log.Logger = new LoggerConfiguration()
@@ -10,7 +11,7 @@ Log.Information("Starting up");
 var builder = WebApplication.CreateBuilder(args);
 try
 {
-    builder.Host.AddAppConfigurations();
+    builder.AddAppConfigurations();
     builder.Host.ConfigureSerilog();
 
     builder.Host.UseSerilog((ctx, lc) => lc
@@ -23,6 +24,7 @@ try
         .ConfigurePipeline();
 
     await app.MigrateDatabaseAsync(builder.Configuration);
+    await SeedUserData.EnsureSeedDataAsync(builder.Configuration.GetConnectionString("IdentitySqlConnection") ?? "");
     app.Run();
 }
 catch (Exception ex)
