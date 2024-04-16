@@ -1,5 +1,7 @@
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using TeduMicroservices.IDP.Infrastructure.Domains;
+using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -29,6 +31,8 @@ internal static class HostingExtensions
 
         // Add services to the container
         builder.Services.AddScoped<IEmailSender, SmtpMailService>();
+        builder.Services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
+        builder.Services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
 
         return builder.Build();
     }
