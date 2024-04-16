@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using System.Data;
 using TeduMicroservices.IDP.Infrastructure.Entities;
+using TeduMicroservices.IDP.Infrastructure.Extensions;
 
 namespace TeduMicroservices.IDP.Infrastructure.Persistence;
 

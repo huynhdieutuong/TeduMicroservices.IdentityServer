@@ -1,12 +1,24 @@
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
+using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
 
 internal static class HostingExtensions
 {
+    public static void AddAppConfigurations(this WebApplicationBuilder builder)
+    {
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true,
+                reloadOnChange: true)
+            .AddEnvironmentVariables();
+    }
+
     public static WebApplication ConfigureServices(this WebApplicationBuilder builder)
     {
+        builder.Services.AddConfigurationSettings(builder.Configuration);
+
         // uncomment if you want to add a UI
         builder.Services.AddRazorPages();
 
@@ -14,6 +26,9 @@ internal static class HostingExtensions
         builder.Services.ConfigureIdentityServer(builder.Configuration);
         builder.Services.ConfigureCookiePolicy();
         builder.Services.ConfigureCors();
+
+        // Add services to the container
+        builder.Services.AddScoped<IEmailSender, SmtpMailService>();
 
         return builder.Build();
     }

@@ -2,8 +2,9 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using TeduMicroservices.IDP.Infrastructure.Common;
+using TeduMicroservices.IDP.Infrastructure.Entities;
 
-namespace TeduMicroservices.IDP.Infrastructure.Entities;
+namespace TeduMicroservices.IDP.Infrastructure.Extensions;
 
 public static class ModelBuilderExtensions
 {

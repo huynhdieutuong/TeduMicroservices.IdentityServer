@@ -1,19 +1,18 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using TeduMicroservices.IDP.Common;
 using TeduMicroservices.IDP.Infrastructure.Entities;
+using TeduMicroservices.IDP.Infrastructure.Extensions;
 using TeduMicroservices.IDP.Infrastructure.Persistence;
 
 namespace TeduMicroservices.IDP.Extensions;
 
 public static class ServiceExtensions
 {
-    public static void AddAppConfigurations(this WebApplicationBuilder builder)
+    internal static void AddConfigurationSettings(this IServiceCollection services, IConfiguration configuration)
     {
-        builder.Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true,
-                reloadOnChange: true)
-            .AddEnvironmentVariables();
+        var emailSettings = configuration.GetSection(nameof(SMTPEmailSetting)).Get<SMTPEmailSetting>();
+        services.AddSingleton(emailSettings);
     }
 
     public static void ConfigureIdentityServer(this IServiceCollection services, IConfiguration configuration)
@@ -41,7 +40,8 @@ public static class ServiceExtensions
                 options.ConfigureDbContext = b => b.UseSqlServer(connectionString,
                     sql => sql.MigrationsAssembly(migrationsAssembly));
             })
-            .AddAspNetIdentity<User>();
+            .AddAspNetIdentity<User>()
+            .AddProfileService<IdentityProfileService>();
     }
 
     public static void ConfigureCors(this IServiceCollection services)
