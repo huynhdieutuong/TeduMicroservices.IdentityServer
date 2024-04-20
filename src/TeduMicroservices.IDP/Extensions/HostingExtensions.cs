@@ -1,7 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
 using Serilog.Sinks.Elasticsearch;
 using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
+using TeduMicroservices.IDP.Infrastructure.Repositories;
+using TeduMicroservices.IDP.Infrastructure.Repositories.Interfaces;
+using TeduMicroservices.IDP.Presentation;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -28,11 +32,20 @@ internal static class HostingExtensions
         builder.Services.ConfigureIdentityServer(builder.Configuration);
         builder.Services.ConfigureCookiePolicy();
         builder.Services.ConfigureCors();
+        builder.Services.ConfigureSwagger(builder.Configuration);
+        builder.Services.AddControllers(config =>
+        {
+            config.RespectBrowserAcceptHeader = true;
+            config.ReturnHttpNotAcceptable = true;
+            config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
+        }).AddApplicationPart(typeof(AssemblyReference).Assembly);
 
         // Add services to the container
         builder.Services.AddScoped<IEmailSender, SmtpMailService>();
         builder.Services.AddTransient(typeof(IUnitOfWork), typeof(UnitOfWork));
         builder.Services.AddTransient(typeof(IRepositoryBase<,>), typeof(RepositoryBase<,>));
+        builder.Services.AddScoped(typeof(IPermissionRepository), typeof(PermissionRepository));
+        builder.Services.AddScoped(typeof(IRepositoryManager), typeof(RepositoryManager));
 
         return builder.Build();
     }
@@ -50,6 +63,14 @@ internal static class HostingExtensions
         app.UseStaticFiles();
 
         app.UseCors("CorsPolicy");
+
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.OAuthClientId("tedu_microservices_swagger");
+            c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
+            c.DisplayRequestDuration();
+        });
 
         app.UseRouting();
 
