@@ -5,7 +5,6 @@ using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
 using TeduMicroservices.IDP.Infrastructure.Repositories;
 using TeduMicroservices.IDP.Infrastructure.Repositories.Interfaces;
-using TeduMicroservices.IDP.Presentation;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -33,12 +32,13 @@ internal static class HostingExtensions
         builder.Services.ConfigureCookiePolicy();
         builder.Services.ConfigureCors();
         builder.Services.ConfigureSwagger(builder.Configuration);
+        builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
         builder.Services.AddControllers(config =>
         {
             config.RespectBrowserAcceptHeader = true;
             config.ReturnHttpNotAcceptable = true;
             config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
-        }).AddApplicationPart(typeof(AssemblyReference).Assembly);
+        });
 
         // Add services to the container
         builder.Services.AddScoped<IEmailSender, SmtpMailService>();
@@ -67,9 +67,7 @@ internal static class HostingExtensions
         app.UseSwagger();
         app.UseSwaggerUI(c =>
         {
-            c.OAuthClientId("tedu_microservices_swagger");
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
-            c.DisplayRequestDuration();
         });
 
         app.UseRouting();
@@ -79,7 +77,11 @@ internal static class HostingExtensions
 
         // uncomment if you want to add a UI
         app.UseAuthorization();
-        app.MapRazorPages().RequireAuthorization();
+        app.UseEndpoints(endpoints =>
+        {
+            endpoints.MapDefaultControllerRoute();
+            endpoints.MapRazorPages().RequireAuthorization();
+        });
 
         return app;
     }

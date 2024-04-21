@@ -1,7 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Dapper;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
+using System.Data;
 using System.Linq.Expressions;
+using TeduMicroservices.IDP.Infrastructure.Common;
 using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
+using TeduMicroservices.IDP.Infrastructure.Exceptions;
 using TeduMicroservices.IDP.Infrastructure.Persistence;
 
 namespace TeduMicroservices.IDP.Infrastructure.Domains;
@@ -86,6 +90,46 @@ public class RepositoryBase<T, K> : IRepositoryBase<T, K> where T : EntityBase<K
     {
         _dbContext.Set<T>().RemoveRange(entities);
         await SaveChangesAsync();
+    }
+    #endregion
+
+    #region Dapper
+    public async Task<IReadOnlyList<TModel>> QueryAsync<TModel>(string sql,
+                                                          object? param,
+                                                          CommandType? commandType = CommandType.StoredProcedure,
+                                                          IDbTransaction? transaction = null,
+                                                          int? commandTimeout = SystemConstants.CommandTimeout) where TModel : EntityBase<K>
+    {
+        return (await _dbContext.Connection.QueryAsync<TModel>(sql, param, transaction, commandTimeout, commandType)).AsList();
+    }
+
+    public async Task<TModel> QueryFirstOrDefaultAsync<TModel>(string sql,
+                                                         object? param,
+                                                         CommandType? commandType = CommandType.StoredProcedure,
+                                                         IDbTransaction? transaction = null,
+                                                         int? commandTimeout = SystemConstants.CommandTimeout) where TModel : EntityBase<K>
+    {
+        var entity = await _dbContext.Connection.QueryFirstOrDefaultAsync<TModel>(sql, param, transaction, commandTimeout, commandType);
+        return entity ?? throw new EntityNotFoundException();
+    }
+
+    public async Task<TModel> QuerySingleAsync<TModel>(string sql,
+                                                 object? param,
+                                                 CommandType? commandType = CommandType.StoredProcedure,
+                                                 IDbTransaction? transaction = null,
+                                                 int? commandTimeout = SystemConstants.CommandTimeout) where TModel : EntityBase<K>
+    {
+        var entity = await _dbContext.Connection.QuerySingleAsync<TModel>(sql, param, transaction, commandTimeout, commandType);
+        return entity ?? throw new EntityNotFoundException();
+    }
+
+    public async Task<int> ExecuteAsync(string sql,
+                                          object? param,
+                                          CommandType? commandType = CommandType.StoredProcedure,
+                                          IDbTransaction? transaction = null,
+                                          int? commandTimeout = SystemConstants.CommandTimeout)
+    {
+        return await _dbContext.Connection.ExecuteAsync(sql, param, transaction, commandTimeout, commandType);
     }
     #endregion
 

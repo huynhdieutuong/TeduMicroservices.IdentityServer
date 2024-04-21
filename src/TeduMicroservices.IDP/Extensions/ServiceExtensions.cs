@@ -91,37 +91,6 @@ public static class ServiceExtensions
                     Url = new Uri("https://tuonghuynh.com")
                 }
             });
-            var identityServerBaseUrl = configuration.GetSection("IdentityServer:BaseUrl").Value;
-            c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Type = SecuritySchemeType.OAuth2,
-                Flows = new OpenApiOAuthFlows
-                {
-                    Implicit = new OpenApiOAuthFlow
-                    {
-                        AuthorizationUrl = new Uri($"{identityServerBaseUrl}/connect/authorize"),
-                        Scopes = new Dictionary<string, string>
-                        {
-                            { "tedu_microservices_api.read", "Tedu Microservices API Read Scope" },
-                            { "tedu_microservices_api.write", "Tedu Microservices API Write Scope" }
-                        }
-                    }
-                }
-            });
-            c.AddSecurityRequirement(new OpenApiSecurityRequirement
-            {
-                {
-                    new OpenApiSecurityScheme
-                    {
-                        Reference = new OpenApiReference { Type = ReferenceType.SecurityScheme, Id = "Bearer" }
-                    },
-                    new List<string>
-                    {
-                        "tedu_microservices_api.read",
-                        "tedu_microservices_api.write"
-                    }
-                }
-            });
         });
     }
 }

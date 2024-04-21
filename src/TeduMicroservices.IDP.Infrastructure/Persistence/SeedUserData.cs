@@ -29,6 +29,10 @@ public class SeedUserData
         await using var serviceProvider = services.BuildServiceProvider();
         using var scope = serviceProvider.GetRequiredService<IServiceScopeFactory>().CreateScope();
 
+        await using var context = scope.ServiceProvider.GetRequiredService<TeduIdentityContext>();
+        context.Database.SetConnectionString(connectionString);
+        await context.Database.MigrateAsync();
+
         await CreateUserAsync(scope, "Alice", "Smith", "Alice Smith's Wollongong",
             Guid.NewGuid().ToString(), "alice123", "Administrator", "alice@example.com");
     }

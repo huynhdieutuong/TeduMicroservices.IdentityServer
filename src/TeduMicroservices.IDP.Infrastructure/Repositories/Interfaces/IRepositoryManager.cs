@@ -8,6 +8,7 @@ public interface IRepositoryManager
 {
     UserManager<User> UserManager { get; }
     RoleManager<IdentityRole> RoleManager { get; }
+    IPermissionRepository Permission { get; }
     Task<int> SaveAsync();
     Task<IDbContextTransaction> BeginTransactionAsync();
     Task EndTransactionAsync();

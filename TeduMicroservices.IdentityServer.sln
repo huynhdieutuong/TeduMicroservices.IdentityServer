@@ -9,7 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
 		src\docker-compose.yml = src\docker-compose.yml
-		query-tables.sql = query-tables.sql
 		README.md = README.md
 	EndProjectSection
 EndProject
@@ -17,7 +16,20 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeduMicroservices.IDP", "sr
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeduMicroservices.IDP.Infrastructure", "src\TeduMicroservices.IDP.Infrastructure\TeduMicroservices.IDP.Infrastructure.csproj", "{018324C1-7562-4E91-9A38-228B33DCFD52}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeduMicroservices.IDP.Presentation", "src\TeduMicroservices.IDP.Presentation\TeduMicroservices.IDP.Presentation.csproj", "{3A84373D-AF0E-4DDF-9A59-20916F77910B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeduMicroservices.IDP.Presentation", "src\TeduMicroservices.IDP.Presentation\TeduMicroservices.IDP.Presentation.csproj", "{3A84373D-AF0E-4DDF-9A59-20916F77910B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DatabaseScripts", "DatabaseScripts", "{70491DAB-9EEB-4186-AEFF-60F52C87342C}"
+	ProjectSection(SolutionItems) = preProject
+		DatabaseScripts\query-tables.sql = DatabaseScripts\query-tables.sql
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "StoreProcedures", "StoreProcedures", "{3DE4F776-4065-4343-8006-CAF57B20F0F7}"
+	ProjectSection(SolutionItems) = preProject
+		DatabaseScripts\Store Procedures\Create_Permission.sql = DatabaseScripts\Store Procedures\Create_Permission.sql
+		DatabaseScripts\Store Procedures\Delete_Permission.sql = DatabaseScripts\Store Procedures\Delete_Permission.sql
+		DatabaseScripts\Store Procedures\Get_Permission_By_RoleId.sql = DatabaseScripts\Store Procedures\Get_Permission_By_RoleId.sql
+		DatabaseScripts\Store Procedures\Update_Permissions_By_RoleId.sql = DatabaseScripts\Store Procedures\Update_Permissions_By_RoleId.sql
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -45,6 +57,8 @@ Global
 		{E4B4D701-6FAF-44BA-919E-B289AD3FAA58} = {BBB37FDB-5F9F-4EA2-8DD0-679A67312D01}
 		{018324C1-7562-4E91-9A38-228B33DCFD52} = {BBB37FDB-5F9F-4EA2-8DD0-679A67312D01}
 		{3A84373D-AF0E-4DDF-9A59-20916F77910B} = {BBB37FDB-5F9F-4EA2-8DD0-679A67312D01}
+		{70491DAB-9EEB-4186-AEFF-60F52C87342C} = {5D77592F-9E08-4D5F-8937-077597E44267}
+		{3DE4F776-4065-4343-8006-CAF57B20F0F7} = {70491DAB-9EEB-4186-AEFF-60F52C87342C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {C1CEE9C4-7E80-4D74-B42B-99DDA85C9235}

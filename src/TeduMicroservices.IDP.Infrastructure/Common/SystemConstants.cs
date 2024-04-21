@@ -3,6 +3,7 @@
 public static class SystemConstants
 {
     public const string IdentitySchema = "Identity";
+    public const int CommandTimeout = 30;
 
     public static class Claims
     {
