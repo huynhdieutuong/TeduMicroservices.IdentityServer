@@ -32,6 +32,8 @@ internal static class HostingExtensions
         builder.Services.ConfigureCookiePolicy();
         builder.Services.ConfigureCors();
         builder.Services.ConfigureSwagger(builder.Configuration);
+        builder.Services.ConfigureAuthentication();
+        builder.Services.ConfigureAuthorization();
         builder.Services.Configure<RouteOptions>(options => options.LowercaseUrls = true);
         builder.Services.AddControllers(config =>
         {
@@ -68,6 +70,8 @@ internal static class HostingExtensions
         app.UseSwaggerUI(c =>
         {
             c.SwaggerEndpoint("/swagger/v1/swagger.json", "Tedu Identity API");
+            c.OAuthClientId("tedu_microservices_swagger");
+            c.DisplayRequestDuration();
         });
 
         app.UseRouting();
@@ -79,7 +83,7 @@ internal static class HostingExtensions
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
-            endpoints.MapDefaultControllerRoute();
+            endpoints.MapDefaultControllerRoute().RequireAuthorization("Bearer");
             endpoints.MapRazorPages().RequireAuthorization();
         });
 
