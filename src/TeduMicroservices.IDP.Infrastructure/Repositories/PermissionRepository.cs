@@ -1,4 +1,6 @@
-﻿using Dapper;
+﻿using AutoMapper;
+using Dapper;
+using Microsoft.AspNetCore.Identity;
 using System.Data;
 using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
@@ -11,8 +13,16 @@ namespace TeduMicroservices.IDP.Infrastructure.Repositories;
 
 public class PermissionRepository : RepositoryBase<Permission, long>, IPermissionRepository
 {
-    public PermissionRepository(TeduIdentityContext dbContext, IUnitOfWork unitOfWork) : base(dbContext, unitOfWork)
+    private readonly UserManager<User> _userManager;
+    private readonly IMapper _mapper;
+
+    public PermissionRepository(TeduIdentityContext dbContext,
+                                IUnitOfWork unitOfWork,
+                                UserManager<User> userManager,
+                                IMapper mapper) : base(dbContext, unitOfWork)
     {
+        _userManager = userManager;
+        _mapper = mapper;
     }
 
     public async Task<IReadOnlyList<PermissionViewModel>> GetPermissionsByRole(string roleId)
@@ -68,5 +78,12 @@ public class PermissionRepository : RepositoryBase<Permission, long>, IPermissio
         parameters.Add("@roleId", roleId, DbType.String);
         parameters.Add("@permissions", dt.AsTableValuedParameter("dbo.Permission"));
         return ExecuteAsync("Update_Permissions_By_RoleId", parameters);
+    }
+
+    public async Task<IEnumerable<PermissionUserViewModel>> GetPermissionsByUser(User user)
+    {
+        var userRoles = await _userManager.GetRolesAsync(user);
+        var permissions = FindByCondition(x => userRoles.Contains(x.RoleId));
+        return _mapper.Map<IEnumerable<PermissionUserViewModel>>(permissions);
     }
 }

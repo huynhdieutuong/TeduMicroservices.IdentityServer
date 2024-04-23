@@ -5,6 +5,7 @@ using TeduMicroservices.IDP.Infrastructure.Domains;
 using TeduMicroservices.IDP.Infrastructure.Domains.Interfaces;
 using TeduMicroservices.IDP.Infrastructure.Repositories;
 using TeduMicroservices.IDP.Infrastructure.Repositories.Interfaces;
+using TeduMicroservices.IDP.Middlewares;
 using TeduMicroservices.IDP.Services.EmailService;
 
 namespace TeduMicroservices.IDP.Extensions;
@@ -41,6 +42,7 @@ internal static class HostingExtensions
             config.ReturnHttpNotAcceptable = true;
             config.Filters.Add(new ProducesAttribute("application/json", "text/plain", "text/json"));
         });
+        builder.Services.AddAutoMapper(typeof(Program));
 
         // Add services to the container
         builder.Services.AddScoped<IEmailSender, SmtpMailService>();
@@ -75,7 +77,7 @@ internal static class HostingExtensions
         });
 
         app.UseRouting();
-
+        app.UseMiddleware<ErrorWrappingMiddleware>();
         app.UseCookiePolicy();
         app.UseIdentityServer();
 
