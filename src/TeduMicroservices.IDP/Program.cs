@@ -15,7 +15,10 @@ try
         .ConfigurePipeline();
 
     await app.MigrateDatabaseAsync(builder.Configuration);
-    await SeedUserData.EnsureSeedDataAsync(builder.Configuration.GetConnectionString("IdentitySqlConnection") ?? "");
+    if (app.Environment.IsDevelopment())
+    {
+        await SeedUserData.EnsureSeedDataAsync(builder.Configuration.GetConnectionString("IdentitySqlConnection") ?? "");
+    }
 
     app.Run();
 }
